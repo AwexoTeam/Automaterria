@@ -1,4 +1,5 @@
 ﻿using Automaterria.Code;
+using Automaterria.Code.Crafter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,12 +28,15 @@ namespace Automaterria
 
             availableChest = new List<Chest>();
             SystemHook.OnModTick += Automaterria_OnModTick;
+            Crafter.Initialize();
         }
 
         private void Automaterria_OnModTick()
         {
             availableChest.Clear();
             Chest middle = null;
+
+            Crafter.Tick();
 
             if (!HasChestByName("Filter", out middle) && !HasChestByName("Crafter", out middle))
                 return;

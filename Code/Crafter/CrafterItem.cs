@@ -1,7 +1,6 @@
 ﻿using Terraria;
 using System;
 using Terraria.ModLoader;
-using Automaterria.Code.Resources;
 using System.Collections.Generic;
 using Terraria.ID;
 
@@ -15,13 +14,12 @@ namespace Automaterria.Code.Crafter
         {
             Tooltip.SetDefault("Very basic Auto Crafter");
             Item.createTile = ModContent.TileType<CrafterTile>();
-
         }
 
         public override void SetDefaults()
         {
-            Item.width = 8;
-            Item.height = 8;
+            Item.width = 1;
+            Item.height = 1;
 
             Item.maxStack = 999;
             Item.consumable = true;
@@ -33,6 +31,7 @@ namespace Automaterria.Code.Crafter
             Item.useTurn = true;
             Item.autoReuse = true;
 
+            Item.DefaultToPlaceableTile(ModContent.TileType<CrafterTile>());
         }
 
         public override void AddRecipes()
