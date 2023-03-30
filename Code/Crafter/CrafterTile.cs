@@ -10,6 +10,8 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using Terraria.Enums;
+using Automaterria.Code.Ui;
 
 namespace Automaterria.Code.Crafter
 {
@@ -19,55 +21,26 @@ namespace Automaterria.Code.Crafter
 
         public override void SetStaticDefaults()
         {
-            TileID.Sets.DrawsWalls[Type] = true;
-            TileID.Sets.IgnoresNearbyHalfbricksWhenDrawn[Type] = true;
-            TileID.Sets.IsAMechanism[Type] = true;
-
-            Main.tileSolid[Type] = true;
-            Main.tileBlockLight[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            Main.tileMergeDirt[Type] = false;
-
             var entity = ModContent.GetInstance<CrafterEntity>();
-            var hook = entity.Hook_AfterPlacement;
 
-            //TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(hook, -1, 1, false);
-            
-            //TileObjectData.addTile(Type);
-        }
-
-        // Read the comments above on AddMapEntry.
-        public override ushort GetMapOption(int i, int j) => (ushort)(Main.tile[i, j].TileFrameY / 18);
-
-        public override bool IsTileDangerous(int i, int j, Player player) => true;
-
-        public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
-        {
-            base.KillTile(i, j, ref fail, ref effectOnly, ref noItem);
-            Crafter.RemoveTile(i, j);
-            
+            TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(entity.Hook_AfterPlacement, -1, 0, false);
+            TileUtils.QuickSetFurniture(this, 1, 1, 0, null, false, Color.Red, false, true, "Factory");
         }
 
         public override void PlaceInWorld(int i, int j, Item item)
         {
-            base.PlaceInWorld(i, j, item);
-            Crafter.AddTile(i, j);
+            Tile tile = Main.tile[i, j];
 
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                NetMessage.SendTileSquare(-1, Player.tileTargetX, Player.tileTargetY, 1, TileChangeType.None);
+            }
         }
-        //public override void PlaceInWorld(int i, int j, Item item)
-        //{
-        //    Tile tile = Main.tile[i, j];
 
-        //    if (Main.netMode == NetmodeID.MultiplayerClient)
-        //    {
-        //        NetMessage.SendTileSquare(-1, Player.tileTargetX, Player.tileTargetY, 1, TileChangeType.None);
-        //    }
-        //}
-
-        //public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        //{
-        //    Point16 origin = TileUtils.GetTileOrigin(i, j);
-        //    ModContent.GetInstance<CrafterEntity>().Kill(origin.X, origin.Y);
-        //}
+        public override bool RightClick(int i, int j)
+        {
+            CrafterUIState.Toggle();
+            return base.RightClick(i, j);
+        }
     }
 }
