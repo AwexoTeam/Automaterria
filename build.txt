@@ -1,0 +1,3 @@
+displayName = Automaterria
+author = Brioski
+version = 0.1
