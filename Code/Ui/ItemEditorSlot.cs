@@ -16,59 +16,6 @@ namespace Automaterria.Code.Ui
 {
     public class ItemEditorSlot : UIElement
     {
-        #region old
-        //        public ItemEditorState parent;
-
-        //        public ItemEditorSlot(ItemEditorState parent)
-        //        {
-        //            this.parent = parent;
-        //            Width.Set(120, 0);
-        //            Height.Set(120, 0);
-        //        }
-
-        //        public override void SafeClick(UIMouseEvent evt)
-        //        {
-        //            if (!Main.mouseItem.IsAir && parent.item.IsAir)
-        //            {
-        //                parent.item = Main.mouseItem.Clone();
-        //                Main.LocalPlayer.HeldItem.TurnToAir();
-        //                Main.mouseItem.TurnToAir();
-
-        //                parent.SetupNewItem();
-        //            }
-        //            else if (Main.mouseItem.IsAir && !parent.item.IsAir)
-        //            {
-        //                Main.mouseItem = parent.item.Clone();
-        //                parent.basicEditorList.Clear();
-        //                parent.modItemEditorList.Clear();
-        //                parent.item.TurnToAir();
-        //            }
-        //        }
-
-        //        public override void Draw(SpriteBatch spriteBatch)
-        //        {
-        //            //TODO: draw box?
-        //            //Helpers.GUIHelper.DrawBox(spriteBatch, GetDimensions().ToRectangle(), ModContent.GetInstance<GUIConfig>().buttonColor);
-
-        //            if (!parent.item.IsAir)
-        //            {
-        //                Main.inventoryScale = 36 / 52f * 120 / 36f;
-        //                ItemSlot.Draw(spriteBatch, ref parent.item, 21, GetDimensions().Position());
-
-        //                if (IsMouseHovering)
-        //                {
-        //                    Main.LocalPlayer.mouseInterface = true;
-        //                    Main.HoverItem = parent.item;
-        //                    Main.hoverItemName = "a";
-        //                }
-        //            }
-        //            else
-        //            {
-        //                Utils.DrawBorderString(spriteBatch, "Place item\nhere!", GetDimensions().Center(), Color.LightGray, 1, 0.5f, 0.5f);
-        //            }
-        //        }
-        #endregion
-
         public int Context { get; set; }
 
         public float Scale { get; private set; }

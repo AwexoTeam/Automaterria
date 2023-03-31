@@ -39,8 +39,13 @@ namespace Automaterria.Code.Crafter
 
         public override bool RightClick(int i, int j)
         {
-            CrafterUIState.Toggle();
+            CrafterEntity entity = null;
+            if (!TileUtils.TryGetTileEntityAs(i, j, out entity))
+                return false;
+
+            CrafterUIState.crafterUIState.Toggle(entity,i,j);
             return base.RightClick(i, j);
         }
+
     }
 }

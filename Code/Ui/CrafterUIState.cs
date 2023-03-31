@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Automaterria.Code.Crafter;
+using Automaterria.Code.Pipe;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,8 +27,9 @@ namespace Automaterria.Code.Ui
         public const int offset = 10;
         public const int doubleOffset = offset * 2;
 
-        public static ItemEditorSlot craftSlot;
-        public static ItemEditorSlot stationSlot;
+        public ItemEditorSlot craftSlot;
+        public ItemEditorSlot stationSlot;
+
         public override void OnInitialize()
         {
             UIPanel panel = new UIPanel();
@@ -58,21 +61,40 @@ namespace Automaterria.Code.Ui
 
         }
 
-        public static void Toggle()
+        public void Toggle(CrafterEntity entity, int i, int j)
         {
-            if (isOn)
-                Hide();
-            else
+
+            
+            if (!isOn)
+            {
                 Show();
+
+                if(entity.crafterItem != null)
+                    craftSlot.SetItem(entity.crafterItem);
+
+                if (entity.stationItem != null)
+                    stationSlot.SetItem(entity.stationItem);
+                return;
+            }
+
+            PipeTile.GetConnectingChests(i + 1, j);
+            PipeTile.GetConnectingChests(i - 1, j);
+            PipeTile.GetConnectingChests(i, j + 1);
+            PipeTile.GetConnectingChests(i, j - 1);
+
+            entity.crafterItem = craftSlot.StoredItem;
+            entity.stationItem = stationSlot.StoredItem;
+
+            Hide();
         }
 
-        public static void Show()
+        public void Show()
         {
             isOn = true;
             crafterInterface?.SetState(crafterUIState);
         }
 
-        public static void Hide()
+        public void Hide()
         {
             isOn = false;
             crafterInterface?.SetState(null);
