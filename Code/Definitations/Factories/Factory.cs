@@ -110,37 +110,6 @@ namespace Automaterria.Code
 
         protected abstract void Tick();
 
-        public Vector2Int[] viableNeighbors = new Vector2Int[]
-        {
-            //Possible Right placements
-            new Vector2Int(1,0),
-            new Vector2Int(1,1),
-            new Vector2Int(1,-1),
-
-            //Possible Left placements
-            new Vector2Int(-2,0),
-            new Vector2Int(-2,1),
-            new Vector2Int(-2,-1),
-
-            //Possible Top placements
-            new Vector2Int(0,-2),
-            new Vector2Int(-1,-2),
-            new Vector2Int(1,-2),
-
-            //Possible Bottom placements
-            new Vector2Int(0,1),
-            new Vector2Int(-1,1),
-            new Vector2Int(1,1),
-        };
-
-        public Dictionary<Direction, Vector2Int> directions = new Dictionary<Direction, Vector2Int>()
-        {
-            {Direction.Left, new Vector2Int(-1,0) },
-            {Direction.Right, new Vector2Int(1,0) },
-            {Direction.Top, new Vector2Int(-1,0) },
-            {Direction.Bottom, new Vector2Int(1,0) },
-        };
-
         protected List<PipeConnector> GetConnectingChest(out FactoryErrorCode code)
         {
             List<PipeConnector> chests = new List<PipeConnector>();
@@ -295,8 +264,6 @@ namespace Automaterria.Code
                 connectors.Add(new PipeConnector(null, mode, origin, new Vector2Int(i, j)));
                 return;
             }
-
-
 
             if (!validPipeIds.Contains(tile.TileType))
                 return;

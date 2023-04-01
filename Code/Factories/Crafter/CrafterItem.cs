@@ -32,6 +32,7 @@ namespace Automaterria.Code.Factories.Crafter
             Item.autoReuse = true;
 
             Item.DefaultToPlaceableTile(ModContent.TileType<CrafterTile>());
+            Console.WriteLine("ADDING TEXTURE: "+Texture);
         }
 
         public override void AddRecipes()

@@ -1,1 +1,3 @@
-Automaterria is a pretty cool mod, it does...this. Modify this file with a description of your mod.
+Automaterria is a tech mod focusing on automations.
+It also adds some context for your automations such
+as a power grid and more farming.

@@ -29,6 +29,8 @@ namespace Automaterria.Code.Pipe.OutputPipe
 
         public override void SetStaticDefaults()
         {
+            Main.tileSolid[Type] = false;
+            Main.tileSolidTop[Type] = true;
             TileUtils.QuickSetFurniture(this, 1, 1, 0, null, false, Color.Red, false, true, "Pipe");
         }
 

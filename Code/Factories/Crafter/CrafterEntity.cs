@@ -140,12 +140,14 @@ namespace Automaterria.Code.Factories.Crafter
 				.Where(x => x.chest != null)
 				.Select(x => x.chest);
 
-			bool hasAdded = AddToChest(recipe, crafterItem, chests.ToArray());
 
 			//TODO: Round-Robin
 			code = Craft(recipe);
 			if (code != CrafterErrorCode.Success)
 				return code;
+
+			if (AddToChest(recipe, crafterItem, chests.ToArray()))
+				return CrafterErrorCode.NoSpaceInChest;
 
 			return CrafterErrorCode.Success;
 		}
@@ -226,6 +228,8 @@ namespace Automaterria.Code.Factories.Crafter
 			materials.RemoveAll(x => x.IsAir);
 
 			var leftToCraft = GetRequiredMaterials(out code, recipe);
+			if (code != CrafterErrorCode.Success)
+				return code;
 
 			foreach (var mat in materials)
 			{
