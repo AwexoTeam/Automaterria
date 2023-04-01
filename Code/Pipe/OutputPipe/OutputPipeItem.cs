@@ -1,22 +1,22 @@
-﻿using Automaterria.Code.Crafter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Terraria.ModLoader;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Automaterria.Code.Pipe
+namespace Automaterria.Code.Pipe.OutputPipe
 {
-    public class PipeItem : ModItem
+    public  class OutputPipeItem : ModItem
     {
-        public override string Name => "PipeBlock";
+        public override string Name => "OutputPipeBlock";
 
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Very basicPipe");
-            Item.createTile = ModContent.TileType<CrafterTile>();
+            Tooltip.SetDefault("Very basic output Pipe");
+            Item.createTile = ModContent.TileType<OutputPipeTile>();
         }
 
         public override void SetDefaults()
@@ -34,7 +34,7 @@ namespace Automaterria.Code.Pipe
             Item.useTurn = true;
             Item.autoReuse = true;
 
-            Item.DefaultToPlaceableTile(ModContent.TileType<PipeTile>());
+            Item.DefaultToPlaceableTile(ModContent.TileType<OutputPipeTile>());
         }
 
         public override void AddRecipes()

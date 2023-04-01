@@ -1,4 +1,4 @@
-﻿using Automaterria.Code.Crafter;
+﻿using Automaterria.Code.Factories.Crafter;
 using Automaterria.Code.Pipe;
 using System;
 using System.Collections.Generic;
@@ -77,10 +77,10 @@ namespace Automaterria.Code.Ui
                 return;
             }
 
-            PipeTile.GetConnectingChests(i + 1, j);
-            PipeTile.GetConnectingChests(i - 1, j);
-            PipeTile.GetConnectingChests(i, j + 1);
-            PipeTile.GetConnectingChests(i, j - 1);
+            Factory.GetConnectingChests(i + 1, j);
+            Factory.GetConnectingChests(i - 1, j);
+            Factory.GetConnectingChests(i, j + 1);
+            Factory.GetConnectingChests(i, j - 1);
 
             entity.crafterItem = craftSlot.StoredItem;
             entity.stationItem = stationSlot.StoredItem;

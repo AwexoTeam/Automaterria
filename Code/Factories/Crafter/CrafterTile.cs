@@ -13,7 +13,7 @@ using Terraria.ObjectData;
 using Terraria.Enums;
 using Automaterria.Code.Ui;
 
-namespace Automaterria.Code.Crafter
+namespace Automaterria.Code.Factories.Crafter
 {
     public class CrafterTile : ModTile
     {
@@ -44,6 +44,7 @@ namespace Automaterria.Code.Crafter
                 return false;
 
             CrafterUIState.crafterUIState.Toggle(entity,i,j);
+            entity.UIUpdate(entity, i, j);
             return base.RightClick(i, j);
         }
 

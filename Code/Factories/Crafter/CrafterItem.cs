@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using Terraria.ID;
 
-namespace Automaterria.Code.Crafter
+namespace Automaterria.Code.Factories.Crafter
 {
     public class CrafterItem : ModItem
     {

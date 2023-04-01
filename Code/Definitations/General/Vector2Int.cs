@@ -30,5 +30,19 @@ namespace Automaterria.Code
 
 			return MathF.Sqrt(p1 + p2);
 		}
+
+		public static bool operator ==(Vector2Int a, Vector2Int b)
+        {
+			if (a.X != b.X)
+				return false;
+
+			if (a.Y != b.Y)
+				return false;
+
+			return true;
+        }
+		public static bool operator !=(Vector2Int a, Vector2Int b)
+			=> !(a == b);
+
 	}
 }
