@@ -1,5 +1,9 @@
 ﻿using Automaterria.Code;
 using Automaterria.Code.Definitations.Factories;
+using Automaterria.Code.Factories.Battery;
+using Automaterria.Code.Factories.Crafter;
+using Automaterria.Code.Factories.FuelBurner;
+using Automaterria.Code.Factories.SolarPanel;
 using Automaterria.Code.Pipe;
 using Automaterria.Code.Pipe.BasicPipe;
 using Automaterria.Code.Pipe.InputPipe;
@@ -31,17 +35,28 @@ namespace Automaterria.Code
     {
         None,
         Crafter,
+        FuelBurner,
+        SolarPanel,
+        Battery,
+        Farmer,
     }
 
     public abstract class Factory : ModTileEntity
     {
         public static List<Factory> factories;
-        public static List<int> factoryId;
         public abstract int tickDely { get; }
         public abstract FactoryType factoryType { get; }
         private DateTime lastTick = DateTime.Now;
 
         public List<PipeConnector> connectors;
+        public virtual bool givesPower { get; }
+        public virtual bool requiresPower { get; }
+        public int storedPower;
+        public virtual int requiredPower { get; }
+        public abstract int inventorySpaces { get; }
+        public virtual Item[] inventory { get; set; }
+        public const int MAX_INVENTORY_SPACE = 5;
+
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
         {
             if (factories == null)
@@ -93,6 +108,18 @@ namespace Automaterria.Code
 
         protected virtual void PostPlacement(int x, int y, int style, int direction, int alternative) { }
 
+
+        public override void Load()
+        {
+            base.Load();
+            if (inventory == null)
+            {
+                int inv = inventorySpaces > MAX_INVENTORY_SPACE ? MAX_INVENTORY_SPACE : inventorySpaces;
+
+                inventory = new Item[inv];
+                Console.WriteLine("Initialized Inv for "+factoryType+" with "+inventory.Length+"!");
+            }
+        }
         public override void Update()
         {
             if (!IsTileValidForEntity(Position.X, Position.Y))
@@ -269,6 +296,62 @@ namespace Automaterria.Code
                 return;
 
             chk.Enqueue(new Vector2Int(i, j));
+        }
+
+        public virtual void UIUpdate(Factory entity, int x, int y)
+        {
+
+        }
+
+        public int GetPower(int i, int j, int power, bool clear = true)
+        {
+            if (clear)
+                hasChecked.Clear();
+
+            if (hasChecked.Contains(new Vector2Int(i, j)))
+                return power;
+
+            hasChecked.Add(new Vector2Int(i, j));
+            Tile tile = Framing.GetTileSafely(i, j);
+            if (ByPosition.TryGetValue(new Point16(i, j), out TileEntity e) && e is Factory factory)
+            {
+                power += factory.givesPower ? factory.storedPower : 0;
+            }
+
+            if (!tile.RedWire)
+                return power;
+
+            if (Framing.GetTileSafely(i + 1, j).RedWire)
+                power = GetPower(i + 1, j, power, false);
+
+            if (Framing.GetTileSafely(i - 1, j).RedWire)
+                power = GetPower(i - 1, j, power, false);
+
+            if (Framing.GetTileSafely(i, j + 1).RedWire)
+                power = GetPower(i, j + 1, power, false);
+
+            if (Framing.GetTileSafely(i, j - 1).RedWire)
+                power = GetPower(i, j - 1, power, false);
+
+            return power;
+        }
+
+        public bool HasItemInSlot(int index)
+        {
+            if (inventory == null)
+                return false;
+
+            if (inventory.Length <= index)
+                return false;
+
+
+            if (inventory[index] == null)
+                return false;
+
+            if (inventory[index].IsAir)
+                return false;
+
+            return true;
         }
     }
 }

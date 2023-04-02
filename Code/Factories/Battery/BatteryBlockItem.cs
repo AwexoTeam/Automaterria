@@ -4,16 +4,16 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using Terraria.ID;
 
-namespace Automaterria.Code.Factories.Crafter
+namespace Automaterria.Code.Factories.Battery
 {
-    public class CrafterItem : ModItem
+    public class BatteryBlockItem : ModItem
     {
-        public override string Name => "AutoCrafterBlock";
+        public override string Name => "BatteryBlockItem";
 
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Very basic Auto Crafter");
-            Item.createTile = ModContent.TileType<CrafterTile>();
+            Tooltip.SetDefault("Stores Eenrgy");
+            Item.createTile = ModContent.TileType<BatteryBlock>();
         }
 
         public override void SetDefaults()
@@ -31,12 +31,12 @@ namespace Automaterria.Code.Factories.Crafter
             Item.useTurn = true;
             Item.autoReuse = true;
 
-            Item.DefaultToPlaceableTile(ModContent.TileType<CrafterTile>());
+            Item.DefaultToPlaceableTile(ModContent.TileType<BatteryBlock>());
         }
 
         public override void AddRecipes()
         {
-            
+
             var recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.DirtBlock, 10);
 

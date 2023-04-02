@@ -31,9 +31,7 @@ namespace Automaterria.Code.Pipe.BasicPipe
 
         public override void SetStaticDefaults()
         {
-            Main.tileSolid[Type] = false;
-            Main.tileSolidTop[Type] = false;
-            TileUtils.QuickSetFurniture(this, 1, 1, 0, null, false, Color.Red, false, true, "Pipe");
+            TileUtils.QuickSetFurniture(this, 1, 1, 0, null, false, Color.Red, false, false, "Pipe");
         }
 
         public override void PlaceInWorld(int i, int j, Item item)

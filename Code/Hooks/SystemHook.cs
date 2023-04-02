@@ -35,10 +35,9 @@ namespace Automaterria.Code
             base.Load();
             if (!Main.dedServ)
             {
-                CrafterUIState.crafterInterface = new UserInterface();
-
-                CrafterUIState.crafterUIState = new CrafterUIState();
-                CrafterUIState.crafterUIState.Activate();
+                FactoryUI.factoryInterface = new UserInterface();
+                FactoryUI.factoryUIState = new FactoryUI();
+                FactoryUI.factoryUIState.Activate();
             }
         }
 
@@ -46,9 +45,9 @@ namespace Automaterria.Code
         public override void UpdateUI(GameTime gameTime)
         {
             _lastUpdateUiGameTime = gameTime;
-            if (CrafterUIState.crafterInterface?.CurrentState != null)
+            if (FactoryUI.factoryInterface?.CurrentState != null)
             {
-                CrafterUIState.crafterInterface.Update(gameTime);
+                FactoryUI.factoryInterface.Update(gameTime);
             }
         }
 
@@ -61,9 +60,9 @@ namespace Automaterria.Code
                     "MyMod: MyInterface",
                     delegate
                     {
-                        if (_lastUpdateUiGameTime != null && CrafterUIState.crafterInterface?.CurrentState != null)
+                        if (_lastUpdateUiGameTime != null && FactoryUI.factoryInterface?.CurrentState != null)
                         {
-                            CrafterUIState.crafterInterface.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
+                            FactoryUI.factoryInterface.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
                         }
                         return true;
                     },

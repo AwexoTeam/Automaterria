@@ -13,12 +13,12 @@ namespace Automaterria.Code.Ui
 {
 
 
-    public class CrafterUIState : UIState
+    public class FactoryUI : UIState
     {
         public static bool isOn = false;
 
-        public static UserInterface crafterInterface;
-        public static CrafterUIState crafterUIState;
+        public static UserInterface factoryInterface;
+        public static FactoryUI factoryUIState;
 
         public const int elementCount = 2;
         public const int width = 200;
@@ -30,8 +30,12 @@ namespace Automaterria.Code.Ui
         public ItemEditorSlot craftSlot;
         public ItemEditorSlot stationSlot;
 
+        public ItemEditorSlot[] inventory;
+
         public override void OnInitialize()
         {
+            inventory = new ItemEditorSlot[Factory.MAX_INVENTORY_SPACE];
+
             UIPanel panel = new UIPanel();
             panel.Width.Set(width, 0);
             panel.Height.Set(height, 0);
@@ -51,6 +55,7 @@ namespace Automaterria.Code.Ui
             craftSlot.Top.Set(objectHeight + offset, 0);
             craftSlot.Left.Set(offset, 0);
             panel.Append(craftSlot);
+            inventory[0] = craftSlot;
 
             stationSlot = new ItemEditorSlot(0);
             stationSlot.Width.Set(objectHeight, 0);
@@ -58,46 +63,58 @@ namespace Automaterria.Code.Ui
             stationSlot.Left.Set(width - doubleOffset - objectHeight * 2, 0);
             stationSlot.Top.Set(objectHeight + offset, 0);
             panel.Append(stationSlot);
-
+            inventory[1] = stationSlot;
         }
 
-        public void Toggle(CrafterEntity entity, int i, int j)
+        public void Toggle(Factory entity, int i, int j)
         {
-
-            
             if (!isOn)
             {
-                Show();
-
-                if(entity.crafterItem != null)
-                    craftSlot.SetItem(entity.crafterItem);
-
-                if (entity.stationItem != null)
-                    stationSlot.SetItem(entity.stationItem);
+                Show(entity, i, j);
                 return;
             }
 
-            Factory.GetConnectingChests(i + 1, j);
-            Factory.GetConnectingChests(i - 1, j);
-            Factory.GetConnectingChests(i, j + 1);
-            Factory.GetConnectingChests(i, j - 1);
-
-            entity.crafterItem = craftSlot.StoredItem;
-            entity.stationItem = stationSlot.StoredItem;
-
-            Hide();
+            Hide(entity, i, j);
         }
 
-        public void Show()
+        public void Show(Factory entity, int x, int y)
         {
+            if(entity.inventory == null)
+            {
+                Console.WriteLine("Null inventory for " + entity.factoryType);
+                return;
+            }
+
+            for (int i = 0; i < entity.inventory.Length; i++)
+            {
+                Item currItem = entity.inventory[i];
+                if (currItem != null && !currItem.IsAir)
+                    inventory[i].SetItem(currItem, false);
+            }
+
             isOn = true;
-            crafterInterface?.SetState(crafterUIState);
+            factoryInterface?.SetState(factoryUIState);
         }
 
-        public void Hide()
+        public void Hide(Factory entity, int x, int y)
         {
+            //Factory.GetConnectingChests(x + 1, y);
+            //Factory.GetConnectingChests(x - 1, y);
+            //Factory.GetConnectingChests(x, y + 1);
+            //Factory.GetConnectingChests(x, y - 1);
+
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                if (entity.inventory.Length <= inventory.Length)
+                    continue;
+
+                Item currItem = inventory[i].StoredItem;
+                if (currItem != null && !currItem.IsAir)
+                    entity.inventory[i] = currItem;
+            }
+
             isOn = false;
-            crafterInterface?.SetState(null);
+            factoryInterface?.SetState(null);
         }
     }
 }

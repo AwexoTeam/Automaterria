@@ -4,16 +4,16 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using Terraria.ID;
 
-namespace Automaterria.Code.Factories.Crafter
+namespace Automaterria.Code.Factories.SolarPanel
 {
-    public class CrafterItem : ModItem
+    public class SolarPanelItem : ModItem
     {
-        public override string Name => "AutoCrafterBlock";
+        public override string Name => "SolarPanelItem";
 
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Very basic Auto Crafter");
-            Item.createTile = ModContent.TileType<CrafterTile>();
+            Tooltip.SetDefault("Passively Gives Energy if its day!");
+            Item.createTile = ModContent.TileType<SolarPanelBlock>();
         }
 
         public override void SetDefaults()
@@ -31,12 +31,12 @@ namespace Automaterria.Code.Factories.Crafter
             Item.useTurn = true;
             Item.autoReuse = true;
 
-            Item.DefaultToPlaceableTile(ModContent.TileType<CrafterTile>());
+            Item.DefaultToPlaceableTile(ModContent.TileType<SolarPanelBlock>());
         }
 
         public override void AddRecipes()
         {
-            
+
             var recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.DirtBlock, 10);
 

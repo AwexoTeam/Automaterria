@@ -29,20 +29,20 @@ namespace Automaterria.Code.Factories.Crafter
 			NoOutputs,
 			NoSpaceInChest,
 			Success,
-		}
+            NotEnoughPower,
+        }
 
-		public Item crafterItem = null;
-		public Item stationItem = null;
-
-		
 		private CrafterErrorCode lastCode = CrafterErrorCode.Success;
 
 		public override int tickDely => 150;
+        public override int requiredPower => 100;
 
-		public override FactoryType factoryType => FactoryType.Crafter;
+        public override FactoryType factoryType => FactoryType.Crafter;
 
-		#region Formalities
-		public override bool IsTileValidForEntity(int i, int j)
+		public override int inventorySpaces => 2;
+
+        #region Formalities
+        public override bool IsTileValidForEntity(int i, int j)
 		{
 
 			Tile tile = Framing.GetTileSafely(i, j);
@@ -65,12 +65,11 @@ namespace Automaterria.Code.Factories.Crafter
 			Console.WriteLine("Saving...");
 			base.SaveData(tag);
 
-			tag["craftItemType"] = crafterItem == null ? 0 : crafterItem.type;
-			tag["craftItemStack"] = crafterItem == null ? 0 : crafterItem.stack;
+			tag["craftItemType"] = !HasItemInSlot(0) ? 0 : inventory[0].type;
+			tag["craftItemStack"] = !HasItemInSlot(0) ? 0 : inventory[0].stack;
 
-			tag["stationItemType"] = stationItem == null ? 0 : stationItem.type;
-			tag["stationItemStack"] = stationItem == null ? 0 : stationItem.stack;
-
+			tag["stationItemType"] = !HasItemInSlot(1) ? 0 : inventory[1].type;
+			tag["stationItemStack"] = !HasItemInSlot(1) ? 0 : inventory[1].stack;
 		}
 
 		public override void LoadData(TagCompound tag)
@@ -85,7 +84,7 @@ namespace Automaterria.Code.Factories.Crafter
 			{
 				lookup = Array.Find(Main.item, i => i.type == craftItemType);
 				if (lookup != null)
-					crafterItem = new Item(craftItemType, craftItemStack);
+					inventory[0] = new Item(craftItemType, craftItemStack);
 			}
 
 			Console.WriteLine($"x{craftItemStack} ID:{craftItemType}");
@@ -97,7 +96,7 @@ namespace Automaterria.Code.Factories.Crafter
 			{
 				lookup = Array.Find(Main.item, i => i.type == stationItemType);
 				if (lookup != null)
-					stationItem = new Item(stationItemType, stationItemStack);
+					inventory[1] = new Item(stationItemType, stationItemStack);
 			}
 
 			Console.WriteLine($"x{stationItemStack} ID:{stationItemType}");
@@ -106,7 +105,11 @@ namespace Automaterria.Code.Factories.Crafter
 
 		protected override void Tick()
 		{
-			CrafterErrorCode code = CrafterTick();
+			
+			CrafterErrorCode code = CrafterErrorCode.UnknownError;
+			int pow = GetPower(Position.X,Position.Y, 0);
+
+			code = pow < requiredPower ? CrafterErrorCode.NotEnoughPower : CrafterTick();
 
 			if (code != lastCode)
 			{
@@ -116,13 +119,15 @@ namespace Automaterria.Code.Factories.Crafter
 		}
 		private CrafterErrorCode CrafterTick()
 		{
+			
+
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 				return CrafterErrorCode.Success;
 
 			//TODO: Dont do floodfill in the fucking tick function...
 			FactoryErrorCode factoryError = FactoryErrorCode.Success;
 			connectors = GetConnectingChest(out factoryError);
-            
+			
 			//return CrafterErrorCode.Success;
 			
 			if (factoryError != FactoryErrorCode.Success)
@@ -132,7 +137,7 @@ namespace Automaterria.Code.Factories.Crafter
 			if (code != CrafterErrorCode.Success)
 				return code;
 
-			Recipe recipe = Array.Find(Main.recipe, x => x.createItem.type == crafterItem.type);
+			Recipe recipe = Array.Find(Main.recipe, x => x.createItem.type == inventory[0].type);
 
 
 			var chests = connectors
@@ -146,7 +151,7 @@ namespace Automaterria.Code.Factories.Crafter
 			if (code != CrafterErrorCode.Success)
 				return code;
 
-			if (AddToChest(recipe, crafterItem, chests.ToArray()))
+			if (AddToChest(recipe, inventory[0], chests.ToArray()))
 				return CrafterErrorCode.NoSpaceInChest;
 
 			return CrafterErrorCode.Success;
@@ -169,13 +174,13 @@ namespace Automaterria.Code.Factories.Crafter
 			if (inputs.Count <= 0)
 				return CrafterErrorCode.NoInputs;
 
-			if (crafterItem == null)
+			if (inventory[0] == null)
 				return CrafterErrorCode.NoCraft;
 
-			if (crafterItem.IsAir)
+			if (inventory[0].IsAir)
 				return CrafterErrorCode.NoCraft;
 
-			if (!Array.Exists(Main.recipe, x => x.createItem.type == crafterItem.type))
+			if (!Array.Exists(Main.recipe, x => x.createItem.type == inventory[0].type))
 				return CrafterErrorCode.NoRecipe;
 
 			//TODO: check if it needs a tileID
@@ -273,8 +278,9 @@ namespace Automaterria.Code.Factories.Crafter
 		protected override void PostNetSend(BinaryWriter writer)
 		{
 			base.PostNetSend(writer);
-			int crafterItemId = crafterItem == null && !crafterItem.IsAir ? -1 : crafterItem.type;
-			int stationItemId = stationItem == null && !stationItem.IsAir ? -1 : stationItem.type;
+
+			int crafterItemId = HasItemInSlot(0) ? inventory[0].type : -1;
+			int stationItemId = HasItemInSlot(1) ? inventory[1].type : -1;
 
 			writer.Write(crafterItemId);
 			writer.Write(stationItemId);
@@ -295,17 +301,12 @@ namespace Automaterria.Code.Factories.Crafter
 			int stationId = reader.ReadInt32();
 
 			if (crafterId > 0)
-				crafterItem = Main.item.Where(x => x.type == crafterId).First();
+				inventory[0] = Main.item.Where(x => x.type == crafterId).First();
 
 			if (stationId > 0)
-				stationItem = Main.item.Where(x => x.type == stationId).First();
+				inventory[1] = Main.item.Where(x => x.type == stationId).First();
 
 			factories.Add(entity);
-		}
-
-		public void UIUpdate(CrafterEntity entity, int x, int y)
-		{
-
 		}
 	}
 }

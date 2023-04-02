@@ -13,11 +13,11 @@ using Terraria.ObjectData;
 using Terraria.Enums;
 using Automaterria.Code.Ui;
 
-namespace Automaterria.Code.Factories.Crafter
+namespace Automaterria.Code.Factories.FuelBurner
 {
-    public class CrafterTile : ModTile
+    public class FuelBurnerBlock : ModTile
     {
-        public override string Name => "AutoCrafterTile";
+        public override string Name => "FuelBurnerTile";
         private static int _tileid;
         public static int tileid
         {
@@ -26,14 +26,14 @@ namespace Automaterria.Code.Factories.Crafter
                 if (_tileid > 0)
                     return _tileid;
 
-                _tileid = ModContent.TileType<CrafterTile>();
+                _tileid = ModContent.TileType<FuelBurnerBlock>();
                 return _tileid;
             }
         }
 
         public override void SetStaticDefaults()
         {
-            var entity = ModContent.GetInstance<CrafterEntity>();
+            var entity = ModContent.GetInstance<FuelBurnerEntity>();
 
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(entity.Hook_AfterPlacement, -1, 0, false);
             TileUtils.QuickSetFurniture(this, 2, 2, 0, null, false, Color.Red, false, true, "Factory");
@@ -45,23 +45,19 @@ namespace Automaterria.Code.Factories.Crafter
 
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                NetMessage.SendTileSquare(-1, Player.tileTargetX, Player.tileTargetY, 2, TileChangeType.None);
+                NetMessage.SendTileSquare(-1, Player.tileTargetX, Player.tileTargetY, 1, TileChangeType.None);
             }
         }
 
         public override bool RightClick(int i, int j)
         {
-            TileEntity e = null;
-            bool found = TileEntity.ByPosition.TryGetValue(new Point16(i, j), out e);
+            FuelBurnerEntity entity = null;
+            if (!TileUtils.TryGetTileEntityAs(i, j, out entity))
+                return false;
 
-            if (found && e is Factory factory)
-            {
-                FactoryUI.factoryUIState.Toggle(factory, i, j);
-                factory.UIUpdate(factory, i, j);
-                return base.RightClick(i, j);
-            }
-
-            return false;
+            //CrafterUIState.crafterUIState.Toggle(entity, i, j);
+            //entity.UIUpdate(entity, i, j);
+            return base.RightClick(i, j);
         }
 
     }
