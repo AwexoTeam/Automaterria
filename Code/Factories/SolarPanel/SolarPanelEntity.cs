@@ -20,7 +20,7 @@ namespace Automaterria.Code.Factories.SolarPanel
     {
         public override int inventorySpaces => 0;
         public override bool givesPower => true;
-        public override int tickDely => 1000;
+        public override int tickDely => 100;
 
         public override FactoryType factoryType => FactoryType.SolarPanel;
 

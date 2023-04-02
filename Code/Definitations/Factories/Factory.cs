@@ -54,7 +54,9 @@ namespace Automaterria.Code
         public int storedPower;
         public virtual int requiredPower { get; }
         public abstract int inventorySpaces { get; }
-        public virtual Item[] inventory { get; set; }
+
+        private Item[] _inventory = new Item[MAX_INVENTORY_SPACE];
+        public virtual Item[] inventory { get { return _inventory; } set { _inventory = value; } }
         public const int MAX_INVENTORY_SPACE = 5;
 
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
