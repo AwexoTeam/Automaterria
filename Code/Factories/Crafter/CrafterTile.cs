@@ -56,7 +56,7 @@ namespace Automaterria.Code.Factories.Crafter
 
             if (found && e is Factory factory)
             {
-                FactoryUI.factoryUIState.Toggle(factory, i, j);
+                FactoryUI.factoryUIState.Toggle(factory, "Crafter", i, j);
                 factory.UIUpdate(factory, i, j);
                 return base.RightClick(i, j);
             }

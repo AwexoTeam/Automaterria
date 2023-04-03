@@ -174,6 +174,8 @@ namespace Automaterria.Code.Factories.Crafter
 			if (inputs.Count <= 0)
 				return CrafterErrorCode.NoInputs;
 
+            Console.WriteLine("Got this far!");
+            Console.WriteLine("Is Inventory: " + inventory[0] == null);
 			if (inventory[0] == null)
 				return CrafterErrorCode.NoCraft;
 

@@ -39,7 +39,6 @@ namespace Automaterria.Code.Factories.SolarPanel
 
         protected override void Tick()
         {
-            Console.WriteLine("Stored power: " + storedPower);
             if (storedPower >= solarPanelMaxPower)
             {
                 storedPower = solarPanelMaxPower;

@@ -52,13 +52,18 @@ namespace Automaterria.Code.Factories.SolarPanel
 
         public override bool RightClick(int i, int j)
         {
-            SolarBlockEntity entity = null;
-            if (!TileUtils.TryGetTileEntityAs(i, j, out entity))
-                return false;
+            TileEntity e = null;
+            bool found = TileEntity.ByPosition.TryGetValue(new Point16(i, j), out e);
 
-            //CrafterUIState.crafterUIState.Toggle(entity, i, j);
-            //entity.UIUpdate(entity, i, j);
-            return base.RightClick(i, j);
+            if (found && e is SolarBlockEntity factory)
+            {
+                string name = $"Solar {factory.storedPower}/{SolarBlockEntity.solarPanelMaxPower}";
+                FactoryUI.factoryUIState.Toggle(factory, name, i, j);
+                factory.UIUpdate(factory, i, j);
+                return base.RightClick(i, j);
+            }
+
+            return false;
         }
 
     }
