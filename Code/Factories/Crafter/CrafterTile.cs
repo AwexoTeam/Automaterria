@@ -37,6 +37,8 @@ namespace Automaterria.Code.Factories.Crafter
 
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(entity.Hook_AfterPlacement, -1, 0, false);
             TileUtils.QuickSetFurniture(this, 2, 2, 0, null, false, Color.Red, false, true, "Factory");
+
+            Main.tileSolidTop[Type] = true;
         }
 
         public override void PlaceInWorld(int i, int j, Item item)

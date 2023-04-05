@@ -38,6 +38,8 @@ namespace Automaterria.Code.Factories.Farmer
 
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(entity.Hook_AfterPlacement, -1, 0, false);
             TileUtils.QuickSetFurniture(this, 2, 2, 0, null, false, Color.Red, false, true, "Factory");
+
+            Main.tileSolidTop[Type] = true;
         }
 
         public override void PlaceInWorld(int i, int j, Item item)
@@ -52,13 +54,17 @@ namespace Automaterria.Code.Factories.Farmer
 
         public override bool RightClick(int i, int j)
         {
-            FarmerEntity entity = null;
-            if (!TileUtils.TryGetTileEntityAs(i, j, out entity))
-                return false;
+            TileEntity e = null;
+            bool found = TileEntity.ByPosition.TryGetValue(new Point16(i, j), out e);
 
-            //CrafterUIState.crafterUIState.Toggle(entity, i, j);
-            //entity.UIUpdate(entity, i, j);
-            return base.RightClick(i, j);
+            if (found && e is FarmerEntity factory)
+            {
+                FactoryUI.factoryUIState.Toggle(factory, $"Farmer - {factory.lastCode}", i, j);
+                factory.UIUpdate(factory, i, j);
+                return base.RightClick(i, j);
+            }
+
+            return false;
         }
 
     }

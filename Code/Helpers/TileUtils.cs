@@ -15,69 +15,65 @@ namespace Automaterria.Code
 {
 	public static class TileUtils
 	{
-        public static void QuickSetFurniture(this ModTile tile, int width, int height, int dustType, SoundStyle? hitSound, bool tallBottom, Color mapColor, bool solidTop = false, bool solid = false, string mapName = "", AnchorData bottomAnchor = default, AnchorData topAnchor = default, int[] anchorTiles = null, bool faceDirection = false, bool wallAnchor = false, Point16 Origin = default)
-        {
-            Main.tileLavaDeath[tile.Type] = false;
-            Main.tileFrameImportant[tile.Type] = true;
-            Main.tileSolidTop[tile.Type] = solidTop;
-            Main.tileSolid[tile.Type] = solid;
+		public static void QuickSetFurniture(this ModTile tile, int width, int height, int dustType, SoundStyle? hitSound, bool tallBottom, Color mapColor, bool solidTop = false, bool solid = false, string mapName = "", AnchorData bottomAnchor = default, AnchorData topAnchor = default, int[] anchorTiles = null, bool faceDirection = false, bool wallAnchor = false, Point16 Origin = default)
+		{
+			Main.tileLavaDeath[tile.Type] = false;
+			Main.tileFrameImportant[tile.Type] = true;
+			Main.tileSolidTop[tile.Type] = solidTop;
+			Main.tileSolid[tile.Type] = solid;
 
-            TileObjectData.newTile.Width = width;
-            TileObjectData.newTile.Height = height;
+			TileObjectData.newTile.Width = width;
+			TileObjectData.newTile.Height = height;
 
-            TileObjectData.newTile.CoordinateHeights = new int[height];
+			TileObjectData.newTile.CoordinateHeights = new int[height];
 
-            for (int k = 0; k < height; k++)
-            {
-                TileObjectData.newTile.CoordinateHeights[k] = 16;
-            }
+			for (int k = 0; k < height; k++)
+			{
+				TileObjectData.newTile.CoordinateHeights[k] = 16;
+			}
 
-            if (tallBottom) //this breaks for some tiles: the two leads are multitiles and tiles with random styles
-                TileObjectData.newTile.CoordinateHeights[height - 1] = 18;
+			if (tallBottom) //this breaks for some tiles: the two leads are multitiles and tiles with random styles
+				TileObjectData.newTile.CoordinateHeights[height - 1] = 18;
 
-            TileObjectData.newTile.UsesCustomCanPlace = true;
-            TileObjectData.newTile.CoordinateWidth = 16;
-            TileObjectData.newTile.CoordinatePadding = 2;
-            TileObjectData.newTile.Origin = Origin == default ? new Point16(width / 2, height - 1) : Origin;
+			TileObjectData.newTile.UsesCustomCanPlace = true;
+			TileObjectData.newTile.CoordinateWidth = 16;
+			TileObjectData.newTile.CoordinatePadding = 2;
+			TileObjectData.newTile.Origin = Origin == default ? new Point16(width / 2, height - 1) : Origin;
 
-            if (bottomAnchor != default)
-                TileObjectData.newTile.AnchorBottom = bottomAnchor;
-            /*else
-                TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);*/
+			if (bottomAnchor != default)
+				TileObjectData.newTile.AnchorBottom = bottomAnchor;
+			
+			if (topAnchor != default)
+				TileObjectData.newTile.AnchorTop = topAnchor;
 
-            if (topAnchor != default)
-                TileObjectData.newTile.AnchorTop = topAnchor;
+			if (anchorTiles != null)
+				TileObjectData.newTile.AnchorAlternateTiles = anchorTiles;
 
-            if (anchorTiles != null)
-                TileObjectData.newTile.AnchorAlternateTiles = anchorTiles;
+			if (wallAnchor)
+				TileObjectData.newTile.AnchorWall = true;
 
-            if (wallAnchor)
-                TileObjectData.newTile.AnchorWall = true;
+			if (faceDirection)
+			{
+				TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
+				TileObjectData.newTile.StyleHorizontal = true;
+				TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
+				TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
+				TileObjectData.addAlternate(1);
+			}
 
-            if (faceDirection)
-            {
-                TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
-                TileObjectData.newTile.StyleHorizontal = true;
-                TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
-                TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
-                TileObjectData.addAlternate(1);
-            }
+			TileObjectData.addTile(tile.Type);
 
-            TileObjectData.addTile(tile.Type);
+			ModTranslation name = tile.CreateMapEntryName();
+			name.SetDefault(mapName);
+			tile.AddMapEntry(mapColor, name);
+		}
 
-            ModTranslation name = tile.CreateMapEntryName();
-            name.SetDefault(mapName);
-            tile.AddMapEntry(mapColor, name);
-            //tile.DustType = dustType;
-            //tile.HitSound = hitSound;
-        }
-
-        /// <summary>
-        /// Gets the top-left tile of a multitile
-        /// </summary>
-        /// <param name="i">The tile X-coordinate</param>
-        /// <param name="j">The tile Y-coordinate</param>
-        public static Point16 GetTileOrigin(int i, int j)
+		/// <summary>
+		/// Gets the top-left tile of a multitile
+		/// </summary>
+		/// <param name="i">The tile X-coordinate</param>
+		/// <param name="j">The tile Y-coordinate</param>
+		public static Point16 GetTileOrigin(int i, int j)
 		{
 			//Framing.GetTileSafely ensures that the returned Tile instance is not null
 			//Do note that neither this method nor Framing.GetTileSafely check if the wanted coordiates are in the world!

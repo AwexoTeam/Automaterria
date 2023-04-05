@@ -64,7 +64,7 @@ namespace Automaterria.Code.Ui
             height *= 2;
             height += doubleOffset;
 
-            if (inventorySpace <= 0)
+            if (inventorySpace <= 1)
             {
                 width = 200;
                 height = doubleOffset + objectHeight;
@@ -134,6 +134,8 @@ namespace Automaterria.Code.Ui
                 Item currItem = entity.inventory[i];
                 if (currItem != null && !currItem.IsAir)
                     inventory[i].SetItem(currItem, false);
+                else
+                    inventory[i].SetItem(new Item(0,0), false);
             }
 
             header.SetText(name);
@@ -145,10 +147,15 @@ namespace Automaterria.Code.Ui
         {
             for (int i = 0; i < inventory.Length; i++)
             {
-                if (entity.inventory.Length <= inventory.Length)
+                if (entity.inventorySpaces <= i)
+                {
+                    Console.WriteLine("Too much inventory allocated!");
                     continue;
+                }
 
                 Item currItem = inventory[i].StoredItem;
+                Console.WriteLine("Storing Item: " + currItem.Name + " into slot " + i);
+
                 if (currItem != null && !currItem.IsAir)
                     entity.inventory[i] = currItem;
             }

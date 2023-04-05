@@ -20,11 +20,10 @@ namespace Automaterria.Code.Factories.SolarPanel
     {
         public override int inventorySpaces => 0;
         public override bool givesPower => true;
-        public override int tickDely => 100;
+        public override int tickDely => GlobalConfig.SolarPanelTickDely;
 
         public override FactoryType factoryType => FactoryType.SolarPanel;
 
-        public const int solarPanelPower = 10;
         public const int solarPanelMaxPower = 100;
 
         public override bool IsTileValidForEntity(int i, int j)
@@ -45,7 +44,7 @@ namespace Automaterria.Code.Factories.SolarPanel
                 return;
             }
 
-            storedPower += solarPanelPower;
+            storedPower += GlobalConfig.SolarPanelPower;
         }
     }
 }

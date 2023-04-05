@@ -26,9 +26,16 @@ namespace Automaterria.Code
 
     public enum FactoryErrorCode
     {
-        Success,
+        UnknownError,
+        NoInputs,
+        NoCraft,
+        NotCorrectStation,
+        NoRecipe,
+        NotEnoughIngredients,
         NoOutputs,
-
+        NoSpaceInChest,
+        NotEnoughPower,
+        Success,
     }
 
     public enum FactoryType
@@ -39,6 +46,7 @@ namespace Automaterria.Code
         SolarPanel,
         Battery,
         Farmer,
+        ItemPuller,
     }
 
     public abstract class Factory : ModTileEntity
@@ -156,7 +164,7 @@ namespace Automaterria.Code
             return chests;
         }
 
-        protected bool AddToChest(Recipe recipe, Item crafterItem, params Chest[] chests)
+        protected bool AddToChest(Item createItem, params Chest[] chests)
         {
             //TODO: better stack finding
             //TODO: figure out why you cant add to last
@@ -169,12 +177,12 @@ namespace Automaterria.Code
                 for (int i = 0; i < c.item.Length - 1; i++)
                 {
                     Item currItem = c.item[i];
-                    if (currItem.type == crafterItem.type)
+                    if (currItem.type == createItem.type)
                     {
-                        if (currItem.stack + recipe.createItem.stack <= currItem.maxStack)
+                        if (currItem.stack + createItem.stack <= currItem.maxStack)
                         {
                             hasAdded = true;
-                            currItem.stack += recipe.createItem.stack;
+                            currItem.stack += createItem.stack;
                             output = c;
                             break;
                         }
@@ -188,11 +196,11 @@ namespace Automaterria.Code
                 }
             }
 
-            if (!hasAdded)
-                output.AddItemToShop(recipe.createItem);
-
             if (output == null)
                 return false;
+
+            if (!hasAdded)
+                output.AddItemToShop(createItem);
 
             return hasAdded;
         }
@@ -244,6 +252,7 @@ namespace Automaterria.Code
             Vector2Int pos = possibleChests.First();
             int index = Chest.FindChestByGuessing(pos.X, pos.Y);
             List<PipeConnector> rtn = new List<PipeConnector>();
+
             foreach (var chest in Main.chest)
             {
                 if (chest == null)
@@ -354,6 +363,38 @@ namespace Automaterria.Code
                 return false;
 
             return true;
+        }
+
+        public FactoryErrorCode BasicSetupValidation(bool checkInputs = true, bool checkOutputs = true)
+        {
+            if (connectors == null || connectors.Count <= 0)
+            {
+                if (connectors != null)
+                    connectors.Clear();
+
+                FactoryErrorCode ferr = FactoryErrorCode.Success;
+                connectors = GetConnectingChest(out ferr);
+                if (ferr != FactoryErrorCode.Success)
+                    return ferr;
+            }
+
+            List<Chest> inputs = connectors
+                .Where(x => x.isInput)
+                .Where(x => x.chest != null)
+                .Select(x => x.chest).ToList();
+
+            List<Chest> outputs = connectors
+                .Where(x => x.isOutput)
+                .Where(x => x.chest != null)
+                .Select(x => x.chest).ToList();
+
+            if (inputs.Count <= 0 && checkInputs)
+                return FactoryErrorCode.NoInputs;
+
+            if (outputs.Count <= 0 && checkOutputs)
+                return FactoryErrorCode.NoOutputs;
+
+            return FactoryErrorCode.Success;
         }
     }
 }

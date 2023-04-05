@@ -29,7 +29,8 @@ namespace Automaterria.Code.Pipe.OutputPipe
 
         public override void SetStaticDefaults()
         {
-            TileUtils.QuickSetFurniture(this, 1, 1, 0, null, false, Color.Red, false, false, "Pipe");
+            TileUtils.QuickSetFurniture(this, 1, 1, 0, null, false, Color.Red, true, true, "Pipe");
+
         }
 
         public override void PlaceInWorld(int i, int j, Item item)

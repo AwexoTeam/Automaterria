@@ -27,27 +27,12 @@ namespace Automaterria.Code.Factories.Farmer
             this.rewards = rewards;
         }
 
-        public FarmerRecipe(Item seed, params int[] idsNAmount)
-        {
-            if ((idsNAmount.Length % 2) != 0)
-                return;
-
-            int amount = (int)((float)idsNAmount.Length / 2f);
-            rewards = new Item[amount];
-
-            this.seed = seed;
-            for (int i = 0; i < idsNAmount.Length; i+=2)
-            {
-                int type = idsNAmount[i];
-                int stack = idsNAmount[i++];
-
-                rewards[i] = new Item(type, stack);
-            }
-        }
-
         public static FarmerRecipe GetHerbBase(int seed, int herb, int stack = 1)
         {
-            return new FarmerRecipe(new Item(seed), seed, 1, herb, stack);
+            Item item_seed = new Item(seed, 1);
+            Item item_herb = new Item(herb, stack);
+
+            return new FarmerRecipe(item_seed, item_seed, item_herb);
         }
     }
 
@@ -76,11 +61,16 @@ namespace Automaterria.Code.Factories.Farmer
             FarmerRecipe.GetHerbBase(ItemID.GemTreeEmeraldSeed, ItemID.Emerald, 2),
             FarmerRecipe.GetHerbBase(ItemID.GemTreeSapphireSeed, ItemID.Sapphire, 2),
             FarmerRecipe.GetHerbBase(ItemID.GemTreeTopazSeed, ItemID.Topaz, 2),
+
+
         };
-        public override int inventorySpaces => 2;
+
+        public override int requiredPower => GlobalConfig.FamerPowerReq;
+        public override int inventorySpaces => 1;
         public override bool givesPower => true;
-        public override int tickDely => 5000;
+        public override int tickDely => GlobalConfig.FarmerTickDely;
         public override FactoryType factoryType => FactoryType.Farmer;
+        public FactoryErrorCode lastCode;
 
         public override bool IsTileValidForEntity(int i, int j)
         {
@@ -94,7 +84,68 @@ namespace Automaterria.Code.Factories.Farmer
 
         protected override void Tick()
         {
+            FarmerTick();
+        }
 
+        private FactoryErrorCode FarmerTick()
+        {
+            lastCode = ValidateSetup();
+
+            if (lastCode != FactoryErrorCode.Success)
+                return lastCode;
+
+            FarmerRecipe recipe = null;
+            recipe = possibleItems.Find(x => x.seed.type == inventory[0].type);
+
+            string output = "Planting " + recipe.seed.Name + "\nGiving:\n";
+            foreach (var item in recipe.rewards)
+            {
+                output += item.Name + "\n";
+            }
+
+            Console.WriteLine(output);
+            return FactoryErrorCode.Success;
+        }
+
+        private FactoryErrorCode ValidateSetup()
+        {
+            if (inventory[0] == null || inventory[0].IsAir)
+                return FactoryErrorCode.NoCraft;
+
+            if (connectors == null || connectors.Count <= 0)
+                {
+                    if (connectors != null)
+                        connectors.Clear();
+
+                    FactoryErrorCode ferr = FactoryErrorCode.Success;
+                    connectors = GetConnectingChest(out ferr);
+                    if (ferr != FactoryErrorCode.Success)
+                        return ferr;
+                }
+
+            List<Chest> inputs = connectors.Where(x => x.isInput).Where(x => x.chest != null).Select(x => x.chest).ToList();
+
+            List<Chest> outputs = connectors.Where(x => x.isOutput).Where(x => x.chest != null).Select(x => x.chest).ToList();
+
+            if (inputs.Count <= 0)
+                return FactoryErrorCode.NoInputs;
+
+            if (outputs.Count <= 0)
+                return FactoryErrorCode.NoOutputs;
+
+            var recipes = possibleItems.FindAll(x => x.seed.type == inventory[0].type);
+            if (recipes == null || recipes.Count <= 0)
+                return FactoryErrorCode.NoRecipe;
+
+            int index = Main.rand.Next(recipes.Count);
+            var recipe = recipes[index];
+
+            foreach (var r in recipe.rewards)
+            {
+                AddToChest(r, outputs.ToArray());
+            }
+
+            return FactoryErrorCode.Success;
         }
     }
 }

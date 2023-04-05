@@ -18,11 +18,14 @@ namespace Automaterria.Code.Factories.FuelBurner
 {
     public class FuelBurnerEntity : Factory
     {
-        public override int tickDely => 150;
+        public static Dictionary<int, int> validFuels = new Dictionary<int, int>();
+
+        public override int tickDely => GlobalConfig.FuelBurnerTickDely;
 
         public override FactoryType factoryType => FactoryType.FuelBurner;
 
         public override int inventorySpaces => 1;
+        public override bool givesPower => true;
 
         public override bool IsTileValidForEntity(int i, int j)
         {
@@ -36,6 +39,21 @@ namespace Automaterria.Code.Factories.FuelBurner
 
         protected override void Tick()
         {
+            if (inventory == null)
+                return;
+
+            Item fuel = inventory[0];
+            if (fuel == null || fuel.IsAir)
+                return;
+
+            if (!validFuels.ContainsKey(fuel.type))
+                return;
+
+            fuel.stack--;
+            if (fuel.stack <= 0)
+                fuel.TurnToAir();
+
+            storedPower = validFuels[fuel.type];
         }
     }
 }

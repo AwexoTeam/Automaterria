@@ -13,11 +13,11 @@ using Terraria.ObjectData;
 using Terraria.Enums;
 using Automaterria.Code.Ui;
 
-namespace Automaterria.Code.Factories.SolarPanel
+namespace Automaterria.Code.Factories.ItemPuller
 {
-    public class SolarPanelBlock : ModTile
+    public class ItemPullerTile : ModTile
     {
-        public override string Name => "SolarPanelTile";
+        public override string Name => "ItemPullerTile";
 
         private static int _tileid;
         public static int tileid
@@ -27,17 +27,17 @@ namespace Automaterria.Code.Factories.SolarPanel
                 if (_tileid > 0)
                     return _tileid;
 
-                _tileid = ModContent.TileType<SolarPanelBlock>();
+                _tileid = ModContent.TileType<ItemPullerTile>();
                 return _tileid;
             }
         }
 
         public override void SetStaticDefaults()
         {
-            var entity = ModContent.GetInstance<SolarBlockEntity>();
+            var entity = ModContent.GetInstance<ItemPullerEntity>();
 
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(entity.Hook_AfterPlacement, -1, 0, false);
-            TileUtils.QuickSetFurniture(this, 2, 2, 0, null, false, Color.Red, false, true, "Factory");
+            TileUtils.QuickSetFurniture(this, 1, 1, 0, null, false, Color.Red, true, true, "Factory");
 
             Main.tileSolidTop[Type] = true;
         }
@@ -57,10 +57,9 @@ namespace Automaterria.Code.Factories.SolarPanel
             TileEntity e = null;
             bool found = TileEntity.ByPosition.TryGetValue(new Point16(i, j), out e);
 
-            if (found && e is SolarBlockEntity factory)
+            if (found && e is ItemPullerEntity factory)
             {
-                string name = $"Solar {factory.storedPower}/{SolarBlockEntity.solarPanelMaxPower}";
-                FactoryUI.factoryUIState.Toggle(factory, name, i, j);
+                FactoryUI.factoryUIState.Toggle(factory, $"Item Puller - {factory.lastError}", i, j);
                 factory.UIUpdate(factory, i, j);
                 return base.RightClick(i, j);
             }

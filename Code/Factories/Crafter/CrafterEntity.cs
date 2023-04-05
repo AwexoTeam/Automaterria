@@ -18,24 +18,10 @@ namespace Automaterria.Code.Factories.Crafter
 {
 	public class CrafterEntity : Factory
 	{
-		private enum CrafterErrorCode
-		{
-			UnknownError,
-			NoInputs,
-			NoCraft,
-			NotCorrectStation,
-			NoRecipe,
-			NotEnoughIngredients,
-			NoOutputs,
-			NoSpaceInChest,
-			Success,
-            NotEnoughPower,
-        }
+		private FactoryErrorCode lastCode = FactoryErrorCode.Success;
 
-		private CrafterErrorCode lastCode = CrafterErrorCode.Success;
-
-		public override int tickDely => 150;
-        public override int requiredPower => 100;
+		public override int tickDely => GlobalConfig.CrafterTickDely;
+        public override int requiredPower => GlobalConfig.CrafterPowerReq;
 
         public override FactoryType factoryType => FactoryType.Crafter;
 
@@ -106,10 +92,10 @@ namespace Automaterria.Code.Factories.Crafter
 		protected override void Tick()
 		{
 			
-			CrafterErrorCode code = CrafterErrorCode.UnknownError;
+			FactoryErrorCode code = FactoryErrorCode.UnknownError;
 			int pow = GetPower(Position.X,Position.Y, 0);
 
-			code = pow < requiredPower ? CrafterErrorCode.NotEnoughPower : CrafterTick();
+			code = pow < requiredPower ? FactoryErrorCode.NotEnoughPower : CrafterTick();
 
 			if (code != lastCode)
 			{
@@ -117,24 +103,24 @@ namespace Automaterria.Code.Factories.Crafter
 				lastCode = code;
 			}
 		}
-		private CrafterErrorCode CrafterTick()
+		private FactoryErrorCode CrafterTick()
 		{
 			
 
 			if (Main.netMode == NetmodeID.MultiplayerClient)
-				return CrafterErrorCode.Success;
+				return FactoryErrorCode.Success;
 
 			//TODO: Dont do floodfill in the fucking tick function...
 			FactoryErrorCode factoryError = FactoryErrorCode.Success;
 			connectors = GetConnectingChest(out factoryError);
 			
-			//return CrafterErrorCode.Success;
+			//return FactoryErrorCode.Success;
 			
 			if (factoryError != FactoryErrorCode.Success)
-				return ConvertFactoryCode(factoryError);
+				return factoryError;
 
-			CrafterErrorCode code = ValidateSetup();
-			if (code != CrafterErrorCode.Success)
+			FactoryErrorCode code = ValidateSetup();
+			if (code != FactoryErrorCode.Success)
 				return code;
 
 			Recipe recipe = Array.Find(Main.recipe, x => x.createItem.type == inventory[0].type);
@@ -148,16 +134,16 @@ namespace Automaterria.Code.Factories.Crafter
 
 			//TODO: Round-Robin
 			code = Craft(recipe);
-			if (code != CrafterErrorCode.Success)
+			if (code != FactoryErrorCode.Success)
 				return code;
 
-			if (AddToChest(recipe, inventory[0], chests.ToArray()))
-				return CrafterErrorCode.NoSpaceInChest;
+			if (AddToChest(recipe.createItem, chests.ToArray()))
+				return FactoryErrorCode.NoSpaceInChest;
 
-			return CrafterErrorCode.Success;
+			return FactoryErrorCode.Success;
 		}
 
-		private CrafterErrorCode ValidateSetup()
+		private FactoryErrorCode ValidateSetup()
 		{
 			if (connectors == null || connectors.Count <= 0)
 			{
@@ -167,32 +153,31 @@ namespace Automaterria.Code.Factories.Crafter
 				FactoryErrorCode ferr = FactoryErrorCode.Success;
 				connectors = GetConnectingChest(out ferr);
 				if (ferr != FactoryErrorCode.Success)
-					return ConvertFactoryCode(ferr);
+					return ferr;
 			}
 
 			List<Chest> inputs = connectors.Where(x => x.isInput).Where(x => x.chest != null).Select(x => x.chest).ToList();
 			if (inputs.Count <= 0)
-				return CrafterErrorCode.NoInputs;
+				return FactoryErrorCode.NoInputs;
+
+			if (inventory[0] == null)
+				return FactoryErrorCode.NoCraft;
 
             Console.WriteLine("Got this far!");
-            Console.WriteLine("Is Inventory: " + inventory[0] == null);
-			if (inventory[0] == null)
-				return CrafterErrorCode.NoCraft;
-
 			if (inventory[0].IsAir)
-				return CrafterErrorCode.NoCraft;
+				return FactoryErrorCode.NoCraft;
 
 			if (!Array.Exists(Main.recipe, x => x.createItem.type == inventory[0].type))
-				return CrafterErrorCode.NoRecipe;
+				return FactoryErrorCode.NoRecipe;
 
 			//TODO: check if it needs a tileID
 			if (false)
-				return CrafterErrorCode.NotCorrectStation;
+				return FactoryErrorCode.NotCorrectStation;
 
-			return CrafterErrorCode.Success;
+			return FactoryErrorCode.Success;
 		}
 
-		private Dictionary<int, int> GetRequiredMaterials(out CrafterErrorCode code, Recipe recipe)
+		private Dictionary<int, int> GetRequiredMaterials(out FactoryErrorCode code, Recipe recipe)
 		{
 			List<Chest> inputs = connectors.Where(x => x.isInput).Where(x => x.chest != null).Select(x => x.chest).ToList();
 
@@ -205,7 +190,7 @@ namespace Automaterria.Code.Factories.Crafter
 			{
 				if (!materials.Exists(x => x.type == ingredient.type))
 				{
-					code = CrafterErrorCode.NotEnoughIngredients;
+					code = FactoryErrorCode.NotEnoughIngredients;
 					return leftToCraft;
 				}
 
@@ -216,26 +201,26 @@ namespace Automaterria.Code.Factories.Crafter
 
 				if (count < ingredient.stack)
 				{
-					code = CrafterErrorCode.NotEnoughIngredients;
+					code = FactoryErrorCode.NotEnoughIngredients;
 					return leftToCraft;
 				}
 
 				leftToCraft.Add(ingredient.type, ingredient.stack);
 			}
 
-			code = CrafterErrorCode.Success;
+			code = FactoryErrorCode.Success;
 			return leftToCraft;
 		}
 
-		private CrafterErrorCode Craft(Recipe recipe)
+		private FactoryErrorCode Craft(Recipe recipe)
 		{
-			CrafterErrorCode code = CrafterErrorCode.Success;
+			FactoryErrorCode code = FactoryErrorCode.Success;
 			List<Chest> inputs = connectors.Where(x => x.isInput).Where(x => x.chest != null).Select(x => x.chest).ToList();
 			List<Item> materials = inputs.SelectMany(x => x.item).ToList();
 			materials.RemoveAll(x => x.IsAir);
 
 			var leftToCraft = GetRequiredMaterials(out code, recipe);
-			if (code != CrafterErrorCode.Success)
+			if (code != FactoryErrorCode.Success)
 				return code;
 
 			foreach (var mat in materials)
@@ -262,19 +247,6 @@ namespace Automaterria.Code.Factories.Crafter
 			}
 
 			return code;
-		}
-
-		private CrafterErrorCode ConvertFactoryCode(FactoryErrorCode code)
-		{
-			switch (code)
-			{
-				case FactoryErrorCode.Success:
-					return CrafterErrorCode.Success;
-				case FactoryErrorCode.NoOutputs:
-					return CrafterErrorCode.NoOutputs;
-				default:
-					return CrafterErrorCode.UnknownError;
-			}
 		}
 
 		protected override void PostNetSend(BinaryWriter writer)
