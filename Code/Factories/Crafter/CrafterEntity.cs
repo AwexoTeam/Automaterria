@@ -18,7 +18,7 @@ namespace Automaterria.Code.Factories.Crafter
 {
 	public class CrafterEntity : Factory
 	{
-		private FactoryErrorCode lastCode = FactoryErrorCode.Success;
+		public FactoryErrorCode lastCode = FactoryErrorCode.Success;
 
 		public override int tickDely => GlobalConfig.CrafterTickDely;
         public override int requiredPower => GlobalConfig.CrafterPowerReq;

@@ -10,6 +10,10 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using Automaterria.Code.Factories.ItemPuller;
+using Automaterria.Code.Pipe.BasicPipe;
+using Automaterria.Code.Pipe.OutputPipe;
+using Automaterria.Code.Pipe.InputPipe;
 
 namespace Automaterria.Code
 {
@@ -107,6 +111,36 @@ namespace Automaterria.Code
 
 			entity = null;
 			return false;
+		}
+
+		public static bool ShouldPipeCOnnect(int i, int j)
+		{
+			if (!(WorldGen.InWorld(i, j) && Main.tile[i, j].HasTile))
+				return false;
+
+			int type = Main.tile[i, j].TileType;
+
+			if (type == PipeTile.tileid)
+				return true;
+
+			if (type == InputPipeTile.tileid)
+				return true;
+
+			if (type == OutputPipeTile.tileid)
+				return true;
+
+			if (type == ItemPullerTile.tileid)
+				return true;
+
+			if (type == 21)
+				return true;
+
+			Point16 orgin = TileUtils.GetTileOrigin(i, j);
+
+			TileEntity e = null;
+			bool found = TileEntity.ByPosition.TryGetValue(orgin, out e);
+
+			return found && e is Factory factory;
 		}
 	}
 }

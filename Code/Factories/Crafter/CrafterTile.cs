@@ -56,9 +56,9 @@ namespace Automaterria.Code.Factories.Crafter
             TileEntity e = null;
             bool found = TileEntity.ByPosition.TryGetValue(new Point16(i, j), out e);
 
-            if (found && e is Factory factory)
+            if (found && e is CrafterEntity factory)
             {
-                FactoryUI.factoryUIState.Toggle(factory, "Crafter", i, j);
+                FactoryUI.factoryUIState.Toggle(factory, $"Crafter - {factory.lastCode}", i, j);
                 factory.UIUpdate(factory, i, j);
                 return base.RightClick(i, j);
             }

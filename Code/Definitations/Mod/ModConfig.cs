@@ -23,26 +23,26 @@ namespace Automaterria.Code
 
         public override ConfigScope Mode => ConfigScope.ServerSide;
         [Header("Machine Tick Settings")]
-        public int CrafterTickDely { get; set; }
-        public int FarmerTickDely { get; set; }
-        public int FuelBurnerTickDely { get; set; }
-        public int ItemPullerTickDely { get; set; }
-        public int SolarPanelTickDely { get; set; }
-        public int ThermalTickDely { get; set; }
+        [Range(1, 600000)] public int CrafterTickDely { get; set; }
+        [Range(1, 600000)] public int FarmerTickDely { get; set; }
+        [Range(1, 600000)] public int FuelBurnerTickDely { get; set; }
+        [Range(1, 600000)] public int ItemPullerTickDely { get; set; }
+        [Range(1, 600000)] public int SolarPanelTickDely { get; set; }
+        [Range(1, 600000)] public int ThermalTickDely { get; set; }
 
 
         [Header("Power Requirement Settings")]
-        public int CrafterPowerReq { get; set; }
-        public int FamerPowerReq { get; set; }
-        public int ItemPullerPowerReq { get; set; }
-        public int QuarryPowerReq { get; set; }
+        [Range(1, 1000)] public int CrafterPowerReq { get; set; }
+        [Range(1, 1000)] public int FamerPowerReq { get; set; }
+        [Range(1, 1000)] public int ItemPullerPowerReq { get; set; }
+        [Range(1, 1000)] public int QuarryPowerReq { get; set; }
 
         
         [Header("Power Generation Settings")]
-        public int BatteryMax { get; set; }
-        public int SolarPanelPower { get; set; }
-        public int FuelPower { get; set; }
-        public int ThermalPower { get; set; }
+        [Range(1, 1000)] public int BatteryMax { get; set; }
+        [Range(1, 1000)] public int SolarPanelPower { get; set; }
+        [Range(1, 1000)] public int FuelPower { get; set; }
+        [Range(1, 1000)] public int ThermalPower { get; set; }
 
         [Header("Item Collections")]
         public Dictionary<int, int> otherFuels { get; set; }

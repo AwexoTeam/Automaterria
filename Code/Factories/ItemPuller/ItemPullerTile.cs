@@ -12,6 +12,9 @@ using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.Enums;
 using Automaterria.Code.Ui;
+using Automaterria.Code.Pipe.BasicPipe;
+using Automaterria.Code.Pipe.InputPipe;
+using Automaterria.Code.Pipe.OutputPipe;
 
 namespace Automaterria.Code.Factories.ItemPuller
 {
@@ -39,7 +42,6 @@ namespace Automaterria.Code.Factories.ItemPuller
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(entity.Hook_AfterPlacement, -1, 0, false);
             TileUtils.QuickSetFurniture(this, 1, 1, 0, null, false, Color.Red, true, true, "Factory");
 
-            Main.tileSolidTop[Type] = true;
         }
 
         public override void PlaceInWorld(int i, int j, Item item)
@@ -67,5 +69,23 @@ namespace Automaterria.Code.Factories.ItemPuller
             return false;
         }
 
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+        {
+            int frameX = 0;
+            int frameY = 0;
+            if (TileUtils.ShouldPipeCOnnect(i - 1, j))
+                frameX += 18;
+
+            if (TileUtils.ShouldPipeCOnnect(i + 1, j))
+                frameX += 36;
+            if (TileUtils.ShouldPipeCOnnect(i, j - 1))
+                frameY += 18;
+            if (TileUtils.ShouldPipeCOnnect(i, j + 1))
+                frameY += 36;
+
+            Main.tile[i, j].TileFrameX = (short)frameX;
+            Main.tile[i, j].TileFrameY = (short)frameY;
+            return false;
+        }
     }
 }
