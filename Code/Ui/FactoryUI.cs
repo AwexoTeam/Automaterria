@@ -1,10 +1,4 @@
-﻿using Automaterria.Code.Factories.Crafter;
-using Automaterria.Code.Pipe;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
@@ -59,16 +53,21 @@ namespace Automaterria.Code.Ui
             width = 0;
             width = objectHeight + doubleOffset;
             width *= inventorySpace + 1;
+
             
             height = doubleOffset + objectHeight;
             height *= 2;
             height += doubleOffset;
 
-            if (inventorySpace <= 1)
+            if (inventorySpace <= 0)
             {
                 width = 200;
                 height = doubleOffset + objectHeight;
             }
+
+            if (width < 200)
+                width = 200;
+
         }
 
         private void ResizeUI(string name, int inventorySpaces)

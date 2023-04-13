@@ -29,6 +29,7 @@ namespace Automaterria.Code
         [Range(1, 600000)] public int ItemPullerTickDely { get; set; }
         [Range(1, 600000)] public int SolarPanelTickDely { get; set; }
         [Range(1, 600000)] public int ThermalTickDely { get; set; }
+        [Range(1, 600000)] public int QuarryTickDely { get; set; }
 
 
         [Header("Power Requirement Settings")]
@@ -46,7 +47,14 @@ namespace Automaterria.Code
 
         [Header("Item Collections")]
         public Dictionary<int, int> otherFuels { get; set; }
-        //TODO: otehr grow recipes.
+
+        [Header("Quarry Settings")]
+        [Range(1, 100)] public int CommonLootWeight { get; set; }
+        [Range(1, 100)] public int UncommonLootWeight { get; set; }
+        [Range(1, 100)] public int RareLootWeight { get; set; }
+        [Range(1, 100)] public int EpicLootWeight { get; set; }
+        [Range(1, 100)] public int LegendaryLootWeight { get; set; }
+
     }
 
     public static class GlobalConfig
@@ -57,6 +65,7 @@ namespace Automaterria.Code
         public static int ItemPullerTickDely => Config.config.ItemPullerTickDely;
         public static int SolarPanelTickDely => Config.config.SolarPanelTickDely;
         public static int ThermalTickDely => Config.config.ThermalTickDely;
+        public static int QuarryTickDely => Config.config.QuarryTickDely;
 
 
         public static int CrafterPowerReq => Config.config.CrafterPowerReq;
@@ -69,5 +78,11 @@ namespace Automaterria.Code
         public static int SolarPanelPower => Config.config.SolarPanelPower;
         public static int FuelPower => Config.config.FuelPower;
         public static int ThermalPower => Config.config.ThermalPower;
+
+        public static int CommonLootWeight => Config.config.CommonLootWeight;
+        public static int UncommonLootWeight => Config.config.UncommonLootWeight;
+        public static int RareLootWeight => Config.config.RareLootWeight;
+        public static int EpicLootWeight => Config.config.EpicLootWeight;
+        public static int LegendaryLootWeight => Config.config.LegendaryLootWeight;
     }
 }

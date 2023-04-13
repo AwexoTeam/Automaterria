@@ -1,20 +1,9 @@
-﻿using Automaterria.Code;
-using Automaterria.Code.Definitations.Factories;
-using Automaterria.Code.Factories.Battery;
-using Automaterria.Code.Factories.Crafter;
-using Automaterria.Code.Factories.FuelBurner;
-using Automaterria.Code.Factories.SolarPanel;
-using Automaterria.Code.Pipe;
-using Automaterria.Code.Pipe.BasicPipe;
-using Automaterria.Code.Pipe.InputPipe;
-using Automaterria.Code.Pipe.OutputPipe;
-using Automaterria.Code.Ui;
+﻿using Automaterria.Code.Definitations.Factories;
+using Automaterria.Tiles;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -47,6 +36,7 @@ namespace Automaterria.Code
         Battery,
         Farmer,
         ItemPuller,
+        Quarry,
     }
 
     public abstract class Factory : ModTileEntity
@@ -55,6 +45,8 @@ namespace Automaterria.Code
         public abstract int tickDely { get; }
         public abstract FactoryType factoryType { get; }
         private DateTime lastTick = DateTime.Now;
+
+        protected FactoryErrorCode lastError;
 
         public List<PipeConnector> connectors;
         public virtual bool givesPower { get; }
@@ -347,6 +339,49 @@ namespace Automaterria.Code
             return power;
         }
 
+        public void TakePower(int requiredPower)
+        {
+            int i = Position.X;
+            int j = Position.Y;
+
+            hasChecked.Clear();
+
+            if (hasChecked.Contains(new Vector2Int(i, j)))
+                return;
+
+            hasChecked.Add(new Vector2Int(i, j));
+            Tile tile = Framing.GetTileSafely(i, j);
+
+            bool found = ByPosition.TryGetValue(new Point16(i, j), out TileEntity e);
+
+            if (found && e is Factory factory)
+            {
+                if (!factory.givesPower)
+                    return;
+
+                Console.WriteLine($"{GetType().Name} took power form {factory.GetType()}");
+                requiredPower -= factory.requiredPower;
+            }
+
+            if (requiredPower <= 0)
+                return;
+
+            if (!tile.RedWire)
+                return;
+
+            if (Framing.GetTileSafely(i + 1, j).RedWire)
+                TakePower(requiredPower);
+
+            if (Framing.GetTileSafely(i - 1, j).RedWire)
+                TakePower(requiredPower);
+
+            if (Framing.GetTileSafely(i, j + 1).RedWire)
+                TakePower(requiredPower);
+
+            if (Framing.GetTileSafely(i, j - 1).RedWire)
+                TakePower(requiredPower);
+
+        }
         public bool HasItemInSlot(int index)
         {
             if (inventory == null)
@@ -394,7 +429,64 @@ namespace Automaterria.Code
             if (outputs.Count <= 0 && checkOutputs)
                 return FactoryErrorCode.NoOutputs;
 
+            if (GetPower(Position.X, Position.Y , 0) < requiredPower)
+                return FactoryErrorCode.NotEnoughPower;
+
             return FactoryErrorCode.Success;
+        }
+
+        public virtual string GetUIName()
+        {
+            return factoryType.ToString() + " - " + lastError;
+        }
+
+        public override void SaveData(TagCompound tag)
+            => OnSave(tag);
+
+        protected virtual void OnSave(TagCompound tag)
+        {
+            if (inventorySpaces <= 0)
+                return;
+
+            for (int i = 0; i < inventorySpaces; i++)
+            {
+                Item curr = inventory[i];
+                int type = curr == null || curr.IsAir ? -1 : curr.type;
+                int stack = curr == null || curr.IsAir ? -1 : curr.stack;
+                tag["InventoryType" + i] = type;
+                tag["InventoryStack" + i] = stack;
+            }
+        }
+
+        public override void LoadData(TagCompound tag)
+            => OnLoad(tag);
+
+        protected virtual void OnLoad(TagCompound tag)
+        {
+            if (inventorySpaces <= 0)
+                return;
+
+            inventory = new Item[inventorySpaces];
+            for (int i = 0; i < inventorySpaces; i++)
+            {
+                string typeName = "InventoryType" + i;
+                string stackName = "InventoryStack" + i;
+                if (!tag.ContainsKey(typeName) || !tag.ContainsKey(stackName))
+                {
+                    inventory[i] = null;
+                    continue;
+                }
+
+                int type = tag.GetInt(typeName);
+                int stack = tag.GetInt(stackName);
+                if (type == -1 || stack == -1)
+                {
+                    inventory[i] = null;
+                    continue;
+                }
+
+                inventory[i] = new Item(type, stack);
+            }
         }
     }
 }

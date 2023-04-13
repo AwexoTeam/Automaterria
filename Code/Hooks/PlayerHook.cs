@@ -1,5 +1,4 @@
 ﻿using Automaterria.Code;
-using Automaterria.Code.Factories.Crafter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
