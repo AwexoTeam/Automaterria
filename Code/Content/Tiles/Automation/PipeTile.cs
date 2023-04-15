@@ -12,6 +12,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Automaterria.Code;
 using Automaterria.Entities;
+using Terraria.GameContent;
+using Terraria.Graphics;
 
 namespace Automaterria.Tiles
 {
@@ -66,6 +68,27 @@ namespace Automaterria.Tiles
             Main.tile[i, j].TileFrameX = (short)frameX;
             Main.tile[i, j].TileFrameY = (short)frameY;
             return false;
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Texture2D tex = TextureAssets.Tile[tileid].Value;
+            int x = i * 16;
+            int y = j * 16;
+
+            spriteBatch.Draw(tex, new Vector2(x,y), Color.Red);
+            
+            return base.PreDraw(i, j, spriteBatch);
+        }
+        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Texture2D tex = TextureAssets.Tile[tileid].Value;
+            int x = i * 16;
+            int y = j * 16;
+
+            spriteBatch.Draw(tex, new Vector2(x, y), Color.Red);
+
+            base.PostDraw(i, j, spriteBatch);
         }
     }
 }
