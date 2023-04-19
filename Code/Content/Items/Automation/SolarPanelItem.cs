@@ -9,8 +9,8 @@ namespace Automaterria.Items
 {
     public class SolarPanelItem : ModItem
     {
-        public override string Texture => "Automaterria/Assets/Items/SolarPanelItem";
-        public override string Name => "SolarPanelItem";
+        public override string Texture => "Automaterria/Assets/Machines/SolarPanelTile";
+        public override string Name => "SolarPanel";
 
         public override void SetStaticDefaults()
         {

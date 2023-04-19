@@ -9,8 +9,8 @@ namespace Automaterria.Items
 {
     public class CrafterItem : ModItem
     {
-        public override string Texture => "Automaterria/Assets/Items/AutoCrafterItem";
-        public override string Name => "AutoCrafterItem";
+        public override string Texture => "Automaterria/Assets/Machines/AutoCrafterTile";
+        public override string Name => "AutoCrafter";
 
         public override void SetStaticDefaults()
         {
@@ -38,9 +38,10 @@ namespace Automaterria.Items
 
         public override void AddRecipes()
         {
-            
             var recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.DirtBlock, 10);
+            ItemRecipeHelper.AddBasicMachineIngredients(ref recipe, 2, MachineTypes.Hard);
+            recipe.AddIngredient(ItemID.WorkBench);
+            recipe.AddTile(TileID.HeavyWorkBench);
 
             recipe.Register();
         }

@@ -55,7 +55,7 @@ namespace Automaterria.Entities
             if (chest == null)
                 return;
 
-            Console.WriteLine("Everything is set!");
+            
         }
     }
 }

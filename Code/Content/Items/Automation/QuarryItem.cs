@@ -9,8 +9,8 @@ namespace Automaterria.Items
 {
     public class QuarryItem : ModItem
     {
-        public override string Texture => "Automaterria/Assets/Items/QuarryItem";
-        public override string Name => "QuarryItem";
+        public override string Texture => "Automaterria/Assets/Machines/QuarryTile";
+        public override string Name => "Quarry";
 
         public override void SetStaticDefaults()
         {
@@ -40,7 +40,9 @@ namespace Automaterria.Items
         {
 
             var recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.DirtBlock, 10);
+            ItemRecipeHelper.AddBasicMachineIngredients(ref recipe, 1, MachineTypes.Hard);
+            recipe.AddIngredient(ItemID.Extractinator);
+            recipe.AddTile(TileID.HeavyWorkBench);
 
             recipe.Register();
         }

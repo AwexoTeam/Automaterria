@@ -9,14 +9,15 @@ using Automaterria.Tiles;
 
 namespace Automaterria.Items
 {
-    public class PipeItem : ModItem
+    public class InputPipeItem : ModItem
     {
-        public override string Name => "PipeItem";
-        public override string Texture => "Automaterria/Assets/Items/PipeItem";
+        public override string Name => "InputPipe";
+        public override string Texture => "Automaterria/Assets/Items/InputPipeItem";
+
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Very basicPipe");
-            Item.createTile = ModContent.TileType<PipeTile>();
+            Tooltip.SetDefault("Very basic input Pipe");
+            Item.createTile = ModContent.TileType<InputPipeTile>();
         }
 
         public override void SetDefaults()
@@ -34,7 +35,7 @@ namespace Automaterria.Items
             Item.useTurn = true;
             Item.autoReuse = true;
 
-            Item.DefaultToPlaceableTile(ModContent.TileType<PipeTile>());
+            Item.DefaultToPlaceableTile(ModContent.TileType<InputPipeTile>());
         }
 
         public override void AddRecipes()

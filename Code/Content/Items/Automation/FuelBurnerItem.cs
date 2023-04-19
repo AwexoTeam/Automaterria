@@ -9,8 +9,8 @@ namespace Automaterria.Items
 {
     public class FuelBurnerItem : ModItem
     {
-        public override string Texture => "Automaterria/Assets/Items/FuelBurnerItem";
-        public override string Name => "FuelBurnerItem";
+        public override string Texture => "Automaterria/Assets/Machines/FuelBurnerTile";
+        public override string Name => "FuelBurner";
 
         public override void SetStaticDefaults()
         {
@@ -38,9 +38,11 @@ namespace Automaterria.Items
 
         public override void AddRecipes()
         {
-
             var recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.DirtBlock, 10);
+            ItemRecipeHelper.AddBasicMachineIngredients(ref recipe, 1, MachineTypes.Cheap);
+            recipe.AddIngredient(ItemID.Furnace, 1);
+            recipe.AddIngredient<BatteryItem>();
+            recipe.AddTile(TileID.HeavyWorkBench);
 
             recipe.Register();
         }

@@ -1,21 +1,35 @@
-﻿using Terraria;
+﻿using Automaterria.Items;
 using System;
-using Terraria.ModLoader;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Terraria.ID;
-using Automaterria.Tiles;
+using Terraria.ModLoader;
 
 namespace Automaterria.Items
 {
-    public class ItemPullerItem : ModItem
+    public class InsolatorItem : ModItem
     {
-        public override string Texture => "Automaterria/Assets/Items/ItemPullerItem";
-        public override string Name => "ItemPuller";
+        public override string Texture => "Automaterria/Assets/Items/InsolatorItem";
+        public override string Name => "Insolator";
+
+        private static int _tileid;
+        public static int tileid
+        {
+            get
+            {
+                if (_tileid > 0)
+                    return _tileid;
+
+                _tileid = ModContent.ItemType<InsolatorItem>();
+                return _tileid;
+            }
+        }
 
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Passively Gives Energy if its day!");
-            Item.createTile = ModContent.TileType<ItemPullerTile>();
+            Tooltip.SetDefault("Something");
         }
 
         public override void SetDefaults()
@@ -32,22 +46,14 @@ namespace Automaterria.Items
             Item.useTime = 10;
             Item.useTurn = true;
             Item.autoReuse = true;
-
-            Item.DefaultToPlaceableTile(ModContent.TileType<ItemPullerTile>());
         }
 
         public override void AddRecipes()
         {
-
             var recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.DirtBlock, 10);
+            recipe.AddIngredient(TreeSapItem.tileid, 5);
 
             recipe.Register();
-        }
-
-        public override void RightClick(Terraria.Player player)
-        {
-            Console.WriteLine("Hey!");
         }
     }
 }

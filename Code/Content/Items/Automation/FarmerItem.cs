@@ -4,13 +4,14 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using Terraria.ID;
 using Automaterria.Tiles;
+using Automaterria.Code.Content.Items.Intermediates;
 
 namespace Automaterria.Items
 {
     public class FarmerItem : ModItem
     {
-        public override string Texture => "Automaterria/Assets/Items/FarmerItem";
-        public override string Name => "FarmerItem";
+        public override string Texture => "Automaterria/Assets/Machines/FarmerTile";
+        public override string Name => "AutoFarmer";
 
         public override void SetStaticDefaults()
         {
@@ -38,9 +39,11 @@ namespace Automaterria.Items
 
         public override void AddRecipes()
         {
-
             var recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.DirtBlock, 10);
+            ItemRecipeHelper.AddBasicMachineIngredients(ref recipe, 1, MachineTypes.Hard);
+            recipe.AddIngredient(ItemID.DirtBlock, 200);
+            recipe.AddIngredient<FertilizerItem>(20);
+            recipe.AddTile(TileID.HeavyWorkBench);
 
             recipe.Register();
         }

@@ -12,7 +12,7 @@ namespace Automaterria.Items
     public  class OutputPipeItem : ModItem
     {
         public override string Texture => "Automaterria/Assets/Items/OutputPipeItem";
-        public override string Name => "OutputPipeItem";
+        public override string Name => "OutputPipe";
 
         public override void SetStaticDefaults()
         {

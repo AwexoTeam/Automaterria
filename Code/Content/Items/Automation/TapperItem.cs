@@ -9,7 +9,7 @@ namespace Automaterria.Items
 {
     internal class TapperItem : ModItem
     {
-        public override string Texture => "Automaterria/Assets/Items/TapperItem";
+        public override string Texture => "Automaterria/Assets/Machines/TapperTile";
         public override string Name => "Tapper";
 
         public override void SetStaticDefaults()
@@ -38,10 +38,9 @@ namespace Automaterria.Items
 
         public override void AddRecipes()
         {
-
             var recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.DirtBlock, 10);
-
+            recipe.AddIngredient(ItemID.Wood, 200);
+            recipe.AddTile(TileID.WorkBenches);
             recipe.Register();
         }
 

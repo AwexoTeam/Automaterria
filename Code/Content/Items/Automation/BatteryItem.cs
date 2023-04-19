@@ -3,13 +3,14 @@ using System;
 using Terraria.ModLoader;
 using System.Collections.Generic;
 using Terraria.ID;
+using Automaterria.Items;
 
 namespace Automaterria.Tiles
 {
     public class BatteryItem : ModItem
     {
-        public override string Texture => "Automaterria/Assets/Items/BatteryItem";
-        public override string Name => "BatteryItem";
+        public override string Texture => "Automaterria/Assets/Machines/BatteryTile";
+        public override string Name => "Battery";
 
         public override void SetStaticDefaults()
         {
@@ -37,9 +38,10 @@ namespace Automaterria.Tiles
 
         public override void AddRecipes()
         {
-
             var recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.DirtBlock, 10);
+            ItemRecipeHelper.AddBasicMachineIngredients(ref recipe, 0, MachineTypes.Cheap);
+            recipe.AddIngredient<CapacitorItem>(4);
+            recipe.AddIngredient<WireItem>(10);
 
             recipe.Register();
         }
